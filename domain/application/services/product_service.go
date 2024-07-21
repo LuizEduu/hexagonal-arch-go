@@ -19,18 +19,54 @@ func (s *ProductService) Get(id string) (e.ProductInterface, error) {
 	return product, nil
 }
 
-func (s *ProductService) Save(p e.ProductInterface) (e.ProductInterface, error) {
-	_, err := p.IsValid()
+func (s *ProductService) Create(name string, price float64) (e.ProductInterface, error) {
+	product := e.NewProduct()
+	product.Name = name
+	product.Price = price
+
+	_, err := product.IsValid()
 
 	if err != nil {
-		return nil, err
+		return &e.Product{}, err
 	}
 
-	product, err := s.Persitence.Save(p)
+	result, err := s.Persitence.Save(product)
 
 	if err != nil {
-		return nil, err
+		return &e.Product{}, err
 	}
 
-	return product, nil
+	return result, nil
+}
+
+func (s *ProductService) Enable(product e.ProductInterface) (e.ProductInterface, error) {
+	err := product.Enable()
+
+	if err != nil {
+		return &e.Product{}, err
+	}
+
+	result, err := s.Persitence.Save(product)
+
+	if err != nil {
+		return &e.Product{}, err
+	}
+
+	return result, nil
+}
+
+func (s *ProductService) Disable(product e.ProductInterface) (e.ProductInterface, error) {
+	err := product.Disable()
+
+	if err != nil {
+		return &e.Product{}, err
+	}
+
+	result, err := s.Persitence.Save(product)
+
+	if err != nil {
+		return &e.Product{}, err
+	}
+
+	return result, nil
 }
